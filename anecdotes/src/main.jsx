@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router, Link, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import "./index.css";
 
@@ -8,15 +9,9 @@ const Menu = () => {
   };
   return (
     <div>
-      <a href="#" style={padding}>
-        anecdotes
-      </a>
-      <a href="#" style={padding}>
-        create new
-      </a>
-      <a href="#" style={padding}>
-        about
-      </a>
+      <Link style={padding} to='/'>anecdotes</Link>
+      <Link style={padding} to='/create'>create new</Link>
+      <Link style={padding} to='/about'>about</Link>
     </div>
   );
 };
@@ -94,7 +89,7 @@ const CreateNew = (props) => {
       <h2>Create new Anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          content
+          content {' '}
           <input
             type="text"
             name="content"
@@ -103,7 +98,7 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          author
+          author {' '}
           <input
             type="text"
             name="author"
@@ -112,7 +107,7 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          URL for more info
+          URL for more info {' '}
           <input
             type="text"
             name="info"
@@ -144,34 +139,34 @@ const App = () => {
       votes: 0,
       id: 3,
     },
-    {
-      content:
-        "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-      votes: 0,
-      id: 4,
-    },
-    {
-      content: "Premature optimization is the root of all evil.",
-      votes: 0,
-      id: 5
-    },
-    {
-      content:
-        "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
-      votes: 0,
-      id: 6,
-    },
-    {
-      content:
-        "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
-      votes: 0,
-      id: 7,
-    },
-    {
-      content: "The only way to go fast, is to go well.",
-      votes: 0,
-      id: 8,
-    },
+  //   {
+  //     content:
+  //       "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+  //     votes: 0,
+  //     id: 4,
+  //   },
+  //   {
+  //     content: "Premature optimization is the root of all evil.",
+  //     votes: 0,
+  //     id: 5,
+  //   },
+  //   {
+  //     content:
+  //       "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+  //     votes: 0,
+  //     id: 6,
+  //   },
+  //   {
+  //     content:
+  //       "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
+  //     votes: 0,
+  //     id: 7,
+  //   },
+  //   {
+  //     content: "The only way to go fast, is to go well.",
+  //     votes: 0,
+  //     id: 8,
+  //   },
   ]);
 
   const [notification, setNotification] = useState("");
@@ -193,14 +188,18 @@ const App = () => {
   };
 
   return (
-    <>
+    <Router>
       <h1>Software Anecdotes</h1>
       <Menu />
-      <AnecdoteList anecdotes={anecdotes} onVote={onVote} />
-      <About />
-      <CreateNew addNew={addNew} />
+
+      <Routes>
+        <Route path='/' element={<AnecdoteList anecdotes={anecdotes} onVote={onVote} />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/create' element={<CreateNew addNew={addNew} />} />
+      </Routes>
+      
       <Footer />
-    </>
+    </Router>
   );
 };
 

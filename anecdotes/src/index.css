@@ -4,3 +4,7 @@ ul {
 li {
     list-style: none;
 }
+
+div {
+    margin-bottom: 10px;
+}
