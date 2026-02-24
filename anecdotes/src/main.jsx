@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Link, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./index.css";
 import App from "./App";
@@ -86,6 +86,9 @@ export const Footer = () => {
 };
 
 export const CreateNew = (props) => {
+
+  const navigate = useNavigate()
+
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
@@ -98,6 +101,7 @@ export const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate('/')
   };
 
   return (

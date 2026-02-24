@@ -24,6 +24,7 @@ const App = () => {
       info: 'http://localhost:5173/about'
     }
   ]);
+  const [notification, setNotification] = useState("");
 
   const findById = (id) => {
     return anecdotes.find((a) => a.id === Number(id));
@@ -32,11 +33,12 @@ const App = () => {
   const match = useMatch("/anecdotes/:id");
   const anecdote = match ? findById(match.params.id) : null;
 
-  const [notification, setNotification] = useState("");
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`a new anecdote '${anecdote.content}' was created!`)
+    setTimeout(() => setNotification(null), 5000)
   };
 
   const onVote = (voted) => {
@@ -50,7 +52,7 @@ const App = () => {
     <div>
       <h1>Software Anecdotes</h1>
       <Menu />
-
+      {notification ? <h4>{notification}</h4>: '' }
       <Routes>
         <Route
           path="/"
