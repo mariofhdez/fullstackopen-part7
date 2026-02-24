@@ -1,38 +1,54 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Link, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import "./index.css";
+import App from "./App";
 
-const Menu = () => {
+export const Menu = () => {
   const padding = {
     paddingRight: 5,
   };
   return (
     <div>
-      <Link style={padding} to='/'>anecdotes</Link>
-      <Link style={padding} to='/create'>create new</Link>
-      <Link style={padding} to='/about'>about</Link>
+      <Link style={padding} to="/">
+        anecdotes
+      </Link>
+      <Link style={padding} to="/create">
+        create new
+      </Link>
+      <Link style={padding} to="/about">
+        about
+      </Link>
     </div>
   );
 };
 
-const AnecdoteList = ({ anecdotes, onVote }) => {
+export const AnecdoteList = ({ anecdotes }) => {
   return (
     <>
       <h2>Anecdotes</h2>
       <ul>
         {anecdotes.map((a) => (
-          <li key={a.id}>
+          <Link key={a.id} to={`/anecdotes/${a.id}`}>
             <p>{a.content}</p>
-            has {a.votes} <button onClick={() => onVote(a)}>vote</button>
-          </li>
+          </Link>
         ))}
       </ul>
     </>
   );
 };
 
-const About = () => {
+export const Anecdote = ({ anecdote, onVote }) => {
+  return (
+    <>
+      <h2>{anecdote.content}</h2>
+      <p>has {anecdote.votes} <button onClick={() => onVote(anecdote)}>vote</button></p>
+      <p>for more info see <Link replace to={anecdote.info} >{anecdote.info}</Link></p>
+    </>
+  )
+};
+
+export const About = () => {
   return (
     <div>
       <h2>About anecdote app</h2>
@@ -56,7 +72,7 @@ const About = () => {
   );
 };
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <div>
       Anecdote app for <a href="https://fullstackopen.com/">Full Stack Open</a>.
@@ -69,7 +85,7 @@ const Footer = () => {
   );
 };
 
-const CreateNew = (props) => {
+export const CreateNew = (props) => {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
@@ -89,7 +105,7 @@ const CreateNew = (props) => {
       <h2>Create new Anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          content {' '}
+          content{" "}
           <input
             type="text"
             name="content"
@@ -98,7 +114,7 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          author {' '}
+          author{" "}
           <input
             type="text"
             name="author"
@@ -107,7 +123,7 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          URL for more info {' '}
+          URL for more info{" "}
           <input
             type="text"
             name="info"
@@ -121,86 +137,8 @@ const CreateNew = (props) => {
   );
 };
 
-const App = () => {
-  const [anecdotes, setAnecdotes] = useState([
-    {
-      content: "If it hurts, do it more often.",
-      votes: 0,
-      id: 1,
-    },
-    {
-      content: "Adding manpower to a late software project makes it later!",
-      votes: 0,
-      id: 2,
-    },
-    {
-      content:
-        "The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
-      votes: 0,
-      id: 3,
-    },
-  //   {
-  //     content:
-  //       "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-  //     votes: 0,
-  //     id: 4,
-  //   },
-  //   {
-  //     content: "Premature optimization is the root of all evil.",
-  //     votes: 0,
-  //     id: 5,
-  //   },
-  //   {
-  //     content:
-  //       "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
-  //     votes: 0,
-  //     id: 6,
-  //   },
-  //   {
-  //     content:
-  //       "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
-  //     votes: 0,
-  //     id: 7,
-  //   },
-  //   {
-  //     content: "The only way to go fast, is to go well.",
-  //     votes: 0,
-  //     id: 8,
-  //   },
-  ]);
-
-  const [notification, setNotification] = useState("");
-
-  const addNew = (anecdote) => {
-    anecdote.id = Math.round(Math.random * 10000);
-    setAnecdotes(anecdotes.concat(anecdote));
-  };
-
-  const findById = (id) => {
-    anecdotes.find((a) => a.id === id);
-  };
-
-  const onVote = (voted) => {
-    const newAnecdotes = anecdotes.map((a) =>
-      voted.id !== a.id ? a : { ...a, votes: a.votes + 1 },
-    );
-    setAnecdotes(newAnecdotes);
-  };
-
-  return (
-    <Router>
-      <h1>Software Anecdotes</h1>
-      <Menu />
-
-      <Routes>
-        <Route path='/' element={<AnecdoteList anecdotes={anecdotes} onVote={onVote} />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/create' element={<CreateNew addNew={addNew} />} />
-      </Routes>
-      
-      <Footer />
-    </Router>
-  );
-};
-
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <Router>
+    <App />
+  </Router>,
+);
