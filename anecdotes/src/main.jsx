@@ -1,8 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Link, Navigate, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import { useField } from "./hooks";
 
 export const Menu = () => {
   const padding = {
@@ -42,10 +46,18 @@ export const Anecdote = ({ anecdote, onVote }) => {
   return (
     <>
       <h2>{anecdote.content}</h2>
-      <p>has {anecdote.votes} <button onClick={() => onVote(anecdote)}>vote</button></p>
-      <p>for more info see <Link replace to={anecdote.info} >{anecdote.info}</Link></p>
+      <p>
+        has {anecdote.votes}{" "}
+        <button onClick={() => onVote(anecdote)}>vote</button>
+      </p>
+      <p>
+        for more info see{" "}
+        <Link replace to={anecdote.info}>
+          {anecdote.info}
+        </Link>
+      </p>
     </>
-  )
+  );
 };
 
 export const About = () => {
@@ -86,22 +98,21 @@ export const Footer = () => {
 };
 
 export const CreateNew = (props) => {
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  const content = useField("text");
+  const author = useField("text");
+  const info = useField("text");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     });
-    navigate('/')
+    navigate("/");
   };
 
   return (
@@ -109,31 +120,13 @@ export const CreateNew = (props) => {
       <h2>Create new Anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          content{" "}
-          <input
-            type="text"
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          content <input {...content} />
         </div>
         <div>
-          author{" "}
-          <input
-            type="text"
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          author <input {...author} />
         </div>
         <div>
-          URL for more info{" "}
-          <input
-            type="text"
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          URL for more info <input {...info} />
         </div>
         <button type="submit">create</button>
       </form>

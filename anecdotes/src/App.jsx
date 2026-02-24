@@ -35,7 +35,8 @@ const App = () => {
 
 
   const addNew = (anecdote) => {
-    anecdote.id = Math.round(Math.random * 10000);
+    anecdote.id = Math.round(Math.random() * 10000);
+    console.log(anecdote);
     setAnecdotes(anecdotes.concat(anecdote));
     setNotification(`a new anecdote '${anecdote.content}' was created!`)
     setTimeout(() => setNotification(null), 5000)
