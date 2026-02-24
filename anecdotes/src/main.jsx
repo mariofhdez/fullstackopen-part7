@@ -115,6 +115,13 @@ export const CreateNew = (props) => {
     navigate("/");
   };
 
+  const handleReset = (e) => {
+    e.preventDefault()
+    content.onReset()
+    author.onReset()
+    info.onReset()
+  }
+
   return (
     <div>
       <h2>Create new Anecdote</h2>
@@ -129,6 +136,7 @@ export const CreateNew = (props) => {
           URL for more info <input {...info} />
         </div>
         <button type="submit">create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   );
