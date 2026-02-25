@@ -5,9 +5,44 @@
       "content": "new note"
     },
     {
-      "id": "0dc9",
-      "content": "gwsd"
+      "id": "ff1f",
+      "content": "remember me"
+    },
+    {
+      "id": "c82e",
+      "content": "let's see"
+    },
+    {
+      "id": "f67b",
+      "content": "another one"
+    },
+    {
+      "id": "cb21",
+      "content": "this must be the one"
+    },
+    {
+      "id": "e47c",
+      "content": "Adding a new note"
+    },
+    {
+      "id": "7127",
+      "content": "Reset input"
+    },
+    {
+      "id": "6f6b",
+      "content": "second try"
     }
   ],
-  "persons": []
+  "persons": [
+    {
+      "id": "8995",
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": "8a44",
+      "name": "hellas",
+      "number": "012-123123"
+    }
+  ]
 }

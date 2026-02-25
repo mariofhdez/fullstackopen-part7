@@ -12,13 +12,13 @@ export const useResource = (baseUrl) => {
   }, [baseUrl]);
 
   const create = async (newObject) => {
-    const response = axios.post(baseUrl, newObject);
-    setResources(resources.concat(response.data));
+    const response = await axios.post(baseUrl, newObject);
+    setResources(resources.concat(response.data))
     return response.data;
   };
 
   const update = async (id, newObject) => {
-    const response = axios.put(`${baseUrl}/${id}`, newObject);
+    const response = await axios.put(`${baseUrl}/${id}`, newObject);
     setResources(resources.map((r) => (r.id !== id ? r : response.data)));
     return response.data;
   };

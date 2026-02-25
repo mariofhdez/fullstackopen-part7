@@ -6,16 +6,20 @@ const App = () => {
   const name = useField("text");
   const number = useField("text");
 
-  const [notes, noteService] = useResource('http://localhost:3005/notes')
+  const [notes, noteService] = useResource("http://localhost:3005/notes");
+  const [persons, personService] = useResource("http://localhost:3005/persons");
 
   const handleNoteSubmit = (event) => {
     event.preventDefault();
-    noteService.create({ content: content.value})
+    noteService.create({ content: content.value });
+    content.onReset()
   };
 
   const handlePersonSubmit = (event) => {
     event.preventDefault();
-    console.log("create person");
+    personService.create({ name: name.value, number: number.value})
+    name.onReset()
+    number.onReset()
   };
 
   return (
@@ -25,7 +29,9 @@ const App = () => {
         <input {...content} />
         <button type="submit">create</button>
       </form>
-      {notes.map(n => <p key={n.id}>{n.content}</p>)}
+      {notes.map((n) => (
+        <p key={n.id}>{n.content}</p>
+      ))}
 
       <h2>persons</h2>
       <form onSubmit={handlePersonSubmit}>
@@ -37,6 +43,7 @@ const App = () => {
         </div>
         <button type="submit">create</button>
       </form>
+      {persons.map((p) => (<p key={p.id}>{p.name} - {p.number}</p>))}
     </div>
   );
 };
