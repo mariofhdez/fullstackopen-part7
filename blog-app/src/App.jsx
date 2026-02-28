@@ -119,7 +119,7 @@ function App() {
     try {
       const updatedBlog = await blogService.update(blog)
       const blogList = blogs.map((b) =>
-        b.id === updatedBlog.id ? updatedBlog : b
+        b.id === updatedBlog.id ? updatedBlog : b,
       )
       blogsToShow(blogList)
 
@@ -187,32 +187,32 @@ function App() {
     <>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
-        <div className="textField">
+        <div className='textField'>
           <p>Username</p>
           <input
-            type="text"
+            type='text'
             value={username}
-            name="Username"
+            name='Username'
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
-        <div className="textField">
+        <div className='textField'>
           <p>Password</p>
           <input
-            type="password"
+            type='password'
             value={password}
-            name="Password"
+            name='Password'
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">Login</button>
+        <button type='submit'>Login</button>
       </form>
     </>
   )
 
   const blogForm = () => {
     return (
-      <Togglable buttonLabel="Create new note" ref={blogFormRef}>
+      <Togglable buttonLabel='Create new note' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
     )

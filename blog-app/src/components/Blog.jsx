@@ -41,13 +41,13 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
         <p>{blog.url}</p>
         <p>
           Likes: {blog.likes}{' '}
-          <button onClick={() => handleLike({ ...blog, likes: blog.likes + 1 })}>like</button>
+          <button
+            onClick={() => handleLike({ ...blog, likes: blog.likes + 1 })}>
+            like
+          </button>
         </p>
         <p>{blog.user ? blog.user.name : ''}</p>
-        <button
-          style={showWhenIsSameUser()}
-          onClick={() => handleRemove(blog)}
-        >
+        <button style={showWhenIsSameUser()} onClick={() => handleRemove(blog)}>
           Remove
         </button>
       </div>

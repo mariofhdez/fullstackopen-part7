@@ -21,34 +21,34 @@ const BlogForm = ({ createBlog }) => {
     <div>
       <h2>Create a new blog</h2>
       <form onSubmit={addBlog}>
-        <div className="textField">
+        <div className='textField'>
           <p>Title:</p>
           <input
-            type="text"
+            type='text'
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Title"
+            placeholder='Title'
           />
         </div>
-        <div className="textField">
+        <div className='textField'>
           <p>Author:</p>
           <input
-            type="text"
+            type='text'
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
-            placeholder="Author"
+            placeholder='Author'
           />
         </div>
-        <div className="textField">
+        <div className='textField'>
           <p>URL:</p>
           <input
-            type="text"
+            type='text'
             value={url}
             onChange={(event) => setUrl(event.target.value)}
-            placeholder="Url"
+            placeholder='Url'
           />
         </div>
-        <button type="submit">Save</button>
+        <button type='submit'>Save</button>
       </form>
     </div>
   )

@@ -19,7 +19,7 @@ describe('Component <Blog />', () => {
   test('renders content', async () => {
     const header = container.querySelector('.blogHeader')
     expect(header).toHaveTextContent(
-      'Testing frontend with react-testing-library'
+      'Testing frontend with react-testing-library',
     )
     expect(header).toHaveTextContent('React.js')
 

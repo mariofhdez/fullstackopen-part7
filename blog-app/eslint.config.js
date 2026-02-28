@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import vitestGlobals from 'eslint-plugin-vitest-globals'
 import { defineConfig, globalIgnores } from 'eslint/config'
+import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -28,7 +29,7 @@ export default defineConfig([
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'vitest-globals': vitestGlobals
+      'vitest-globals': vitestGlobals,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -50,4 +51,5 @@ export default defineConfig([
       'no-console': 'off',
     },
   },
+  eslintConfigPrettier,
 ])
