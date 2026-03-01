@@ -1,3 +1,4 @@
+import { useReducer } from 'react'
 import { useState, useEffect, useRef } from 'react'
 
 import Blog from './components/Blog'
@@ -8,17 +9,17 @@ import Togglable from './components/Togglable'
 import blogService from './services/blog'
 import loginService from './services/login'
 
-import './index.css'
+import notificationReducer from './reducers/notificationReducer'
+import LoginForm from './components/LoginForm'
 
 function App() {
   const blogFormRef = useRef()
-  const [message, setMessage] = useState({
+  const [message, messageDispatch] = useReducer(notificationReducer, {
     message: null,
     type: null,
   })
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+
   const [user, setUser] = useState(null)
 
   const blogsToShow = (blogs) => {
@@ -45,8 +46,7 @@ function App() {
     }
   }, [])
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({ username, password })
 
@@ -54,18 +54,18 @@ function App() {
       blogService.setToken(user.token)
       console.log(user)
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: 'Wrong username or password',
-        type: 'error',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: error.response.data.error,
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -77,8 +77,6 @@ function App() {
       window.localStorage.clear()
 
       setUser(null)
-      setUsername('')
-      setPassword('')
     } catch (error) {
       console.error('Error', error.message)
     }
@@ -90,26 +88,30 @@ function App() {
       blogsToShow(blogs.concat(savedBlog))
       blogFormRef.current.toggleVisibility()
 
-      setMessage({
-        message: `a new blog ${blogObject.title} by ${blogObject.author} was added`,
-        type: 'success',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `a new blog ${blogObject.title} by ${blogObject.author} was added`,
+          type: 'success',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: `The blog ${blogObject.title} by ${blogObject.author} was not added`,
-        type: 'error',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `The blog ${blogObject.title} by ${blogObject.author} was not added`,
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -123,26 +125,30 @@ function App() {
       )
       blogsToShow(blogList)
 
-      setMessage({
-        message: `You liked '${blog.title}' by ${blog.author}`,
-        type: 'success',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `You liked '${blog.title}' by ${blog.author}`,
+          type: 'success',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: `Like to the blog ${blog.title} is not registered`,
-        type: 'error',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `Like to the blog ${blog.title} is not registered`,
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -157,65 +163,34 @@ function App() {
         const blogList = blogs.filter((b) => b.id !== blog.id)
         blogsToShow(blogList)
 
-        setMessage({
-          message: 'The deletion was completed successfully',
-          type: 'success',
+        messageDispatch({
+          type: 'SET_MESSAGE',
+          payload: {
+            message: 'The deletion was completed successfully',
+            type: 'success',
+          },
         })
         setTimeout(() => {
-          setMessage({
-            message: null,
-            type: null,
+          messageDispatch({
+            type: 'REMOVE_MESSAGE',
           })
         }, 5000)
       }
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: 'The blog delete process is not completed',
-        type: 'error',
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: 'The blog delete process is not completed',
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
-  }
-
-  const loginForm = () => (
-    <>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div className='textField'>
-          <p>Username</p>
-          <input
-            type='text'
-            value={username}
-            name='Username'
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div className='textField'>
-          <p>Password</p>
-          <input
-            type='password'
-            value={password}
-            name='Password'
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type='submit'>Login</button>
-      </form>
-    </>
-  )
-
-  const blogForm = () => {
-    return (
-      <Togglable buttonLabel='Create new note' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-    )
   }
 
   return (
@@ -223,14 +198,16 @@ function App() {
       <h1>Blog App</h1>
       <Notification message={message.message} type={message.type} />
       {user === null ? (
-        loginForm()
+        <LoginForm login={handleLogin} />
       ) : (
         <div>
           <div>
             <p>{user.name}</p>
             <button onClick={handleLogout}>Log out</button>
           </div>
-          {blogForm()}
+          <Togglable buttonLabel='Create new note' ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
           <h2>Blog list</h2>
           {blogs.map((b) => (
             <Blog
