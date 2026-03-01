@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { store } from './main'
 
@@ -13,26 +14,29 @@ import loginService from './services/login'
 import './index.css'
 
 function App() {
-  const blogFormRef = useRef()
-  const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-
-  const blogsToShow = (blogs) => {
-    const sortedBlogList = blogs.sort((a, b) => {
+  const dispatch = useDispatch()
+  const blogs = useSelector(state => {
+    const sortedBlogList = state.blogs.sort((a, b) => {
       if (a.likes > b.likes) return -1
       if (a.likes < b.likes) return 1
       else return 0
     })
-    setBlogs(sortedBlogList)
-  }
+    return sortedBlogList
+  })
+
+  const blogFormRef = useRef()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then((res) => {
-      blogsToShow(res)
+      dispatch({
+      type: 'SET_BLOGS',
+      payload: res,
     })
-  }, [])
+    })
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -50,7 +54,6 @@ function App() {
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      console.log(user)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -86,7 +89,10 @@ function App() {
   const addBlog = async (blogObject) => {
     try {
       const savedBlog = await blogService.create(blogObject)
-      blogsToShow(blogs.concat(savedBlog))
+      dispatch({
+        type: 'NEW_BLOG',
+        payload: savedBlog
+      })
       blogFormRef.current.toggleVisibility()
 
       store.dispatch({
@@ -233,8 +239,8 @@ function App() {
     <>
       <h1>Blog App</h1>
       <Notification
-        message={store.getState().message}
-        type={store.getState().type}
+        message={store.getState().notification.message}
+        type={store.getState().notification.type}
       />
       {user === null ? (
         loginForm()
