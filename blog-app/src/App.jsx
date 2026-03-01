@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 
+import { store } from './main'
+
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
@@ -12,10 +14,6 @@ import './index.css'
 
 function App() {
   const blogFormRef = useRef()
-  const [message, setMessage] = useState({
-    message: null,
-    type: null,
-  })
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -38,7 +36,7 @@ function App() {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
+    if (loggedUserJSON && loggedUserJSON !== 'undefined') {
       const user = JSON.parse(loggedUserJSON)
       blogService.setToken(user.token)
       setUser(user)
@@ -57,15 +55,16 @@ function App() {
       setUsername('')
       setPassword('')
     } catch (error) {
-      console.log(error)
-      setMessage({
-        message: 'Wrong username or password',
-        type: 'error',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: 'Wrong username or password',
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -90,26 +89,30 @@ function App() {
       blogsToShow(blogs.concat(savedBlog))
       blogFormRef.current.toggleVisibility()
 
-      setMessage({
-        message: `a new blog ${blogObject.title} by ${blogObject.author} was added`,
-        type: 'success',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `a new blog ${blogObject.title} by ${blogObject.author} was added`,
+          type: 'success',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: `The blog ${blogObject.title} by ${blogObject.author} was not added`,
-        type: 'error',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `The blog ${blogObject.title} by ${blogObject.author} was not added`,
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -123,26 +126,30 @@ function App() {
       )
       blogsToShow(blogList)
 
-      setMessage({
-        message: `You liked '${blog.title}' by ${blog.author}`,
-        type: 'success',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `You liked '${blog.title}' by ${blog.author}`,
+          type: 'success',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: `Like to the blog ${blog.title} is not registered`,
-        type: 'error',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `Like to the blog ${blog.title} is not registered`,
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -157,27 +164,31 @@ function App() {
         const blogList = blogs.filter((b) => b.id !== blog.id)
         blogsToShow(blogList)
 
-        setMessage({
-          message: 'The deletion was completed successfully',
-          type: 'success',
+        store.dispatch({
+          type: 'SET_MESSAGE',
+          payload: {
+            message: 'The deletion was completed successfully',
+            type: 'success',
+          },
         })
         setTimeout(() => {
-          setMessage({
-            message: null,
-            type: null,
+          store.dispatch({
+            type: 'REMOVE_MESSAGE',
           })
         }, 5000)
       }
     } catch (error) {
       console.log(error)
-      setMessage({
-        message: 'The blog delete process is not completed',
-        type: 'error',
+      store.dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: 'The blog delete process is not completed',
+          type: 'error',
+        },
       })
       setTimeout(() => {
-        setMessage({
-          message: null,
-          type: null,
+        store.dispatch({
+          type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     }
@@ -221,7 +232,10 @@ function App() {
   return (
     <>
       <h1>Blog App</h1>
-      <Notification message={message.message} type={message.type} />
+      <Notification
+        message={store.getState().message}
+        type={store.getState().type}
+      />
       {user === null ? (
         loginForm()
       ) : (
