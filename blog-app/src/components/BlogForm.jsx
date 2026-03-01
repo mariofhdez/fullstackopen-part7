@@ -1,20 +1,60 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
-const BlogForm = ({ createBlog }) => {
+import blogService from '../services/blog'
+
+const BlogForm = ({ref}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const addBlog = (e) => {
+  const dispatch = useDispatch()
+
+  const addBlog = async (e) => {
     e.preventDefault()
-    createBlog({
-      title: title,
-      author: author,
-      url: url,
-    })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    try {
+      const savedBlog = await blogService.create({
+        title: title,
+        author: author,
+        url: url,
+      })
+      dispatch({
+        type: 'NEW_BLOG',
+        payload: savedBlog,
+      })
+      ref.current.toggleVisibility()
+
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+
+      dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `a new blog ${savedBlog.title} by ${savedBlog.author} was added`,
+          type: 'success',
+        },
+      })
+      setTimeout(() => {
+        dispatch({
+          type: 'REMOVE_MESSAGE',
+        })
+      }, 5000)
+    } catch (error) {
+      console.log(error)
+      dispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: `The blog ${title} by ${author} was not added`,
+          type: 'error',
+        },
+      })
+      setTimeout(() => {
+        dispatch({
+          type: 'REMOVE_MESSAGE',
+        })
+      }, 5000)
+    }
   }
 
   return (
