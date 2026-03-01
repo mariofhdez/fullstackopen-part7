@@ -1,5 +1,5 @@
-import { useReducer } from 'react'
-import { useState, useEffect, useRef } from 'react'
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useRef, useReducer, useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -11,16 +11,44 @@ import loginService from './services/login'
 
 import notificationReducer from './reducers/notificationReducer'
 import LoginForm from './components/LoginForm'
+import userReducer from './reducers/userReducer'
 
 function App() {
+  const queryClient = useQueryClient()
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs']})
+    }
+  })
   const blogFormRef = useRef()
   const [message, messageDispatch] = useReducer(notificationReducer, {
     message: null,
     type: null,
   })
-  const [blogs, setBlogs] = useState([])
+  const [user, userDispatch] = useReducer(userReducer, null)
 
-  const [user, setUser] = useState(null)
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      console.log(user)
+      blogService.setToken(user.token)
+      userDispatch({ type: 'SET_USER', payload: user })
+    }
+  }, [])
+
+  const blogsQuery = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => await blogService.getAll(),
+    refetchOnWindowFocus: false,
+  })
+
+  console.log(JSON.parse(JSON.stringify(blogsQuery)))
+
+  if (blogsQuery.isLoading) {
+    return <div>loading data...</div>
+  }
 
   const blogsToShow = (blogs) => {
     const sortedBlogList = blogs.sort((a, b) => {
@@ -28,23 +56,10 @@ function App() {
       if (a.likes < b.likes) return 1
       else return 0
     })
-    setBlogs(sortedBlogList)
+    return sortedBlogList
   }
 
-  useEffect(() => {
-    blogService.getAll().then((res) => {
-      blogsToShow(res)
-    })
-  }, [])
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      blogService.setToken(user.token)
-      setUser(user)
-    }
-  }, [])
+  const blogs = blogsToShow(blogsQuery.data)
 
   const handleLogin = async (username, password) => {
     try {
@@ -53,7 +68,7 @@ function App() {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       console.log(user)
-      setUser(user)
+      userDispatch({ type: 'SET_USER', payload: user })
     } catch (error) {
       console.log(error)
       messageDispatch({
@@ -76,7 +91,7 @@ function App() {
     try {
       window.localStorage.clear()
 
-      setUser(null)
+      userDispatch({ type: 'REMOVE_USER' })
     } catch (error) {
       console.error('Error', error.message)
     }
@@ -84,8 +99,7 @@ function App() {
 
   const addBlog = async (blogObject) => {
     try {
-      const savedBlog = await blogService.create(blogObject)
-      blogsToShow(blogs.concat(savedBlog))
+      newBlogMutation.mutate(blogObject)
       blogFormRef.current.toggleVisibility()
 
       messageDispatch({
@@ -197,7 +211,7 @@ function App() {
     <>
       <h1>Blog App</h1>
       <Notification message={message.message} type={message.type} />
-      {user === null ? (
+      {(user === null || user === 'undefined') ? (
         <LoginForm login={handleLogin} />
       ) : (
         <div>

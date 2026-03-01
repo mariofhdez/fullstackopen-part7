@@ -7,7 +7,6 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
       if (user.name === blog.user.name) {
         return { display: '' }
       } else {
-        console.log(blog.title)
         return { display: 'none' }
       }
     } else {
