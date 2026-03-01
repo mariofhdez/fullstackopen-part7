@@ -23,5 +23,4 @@ const renderApp = () => root.render(
 )
 
 renderApp()
-store.subscribe(renderApp)
-console.log(store.getState());
+store.subscribe(() => console.log(store.getState()))

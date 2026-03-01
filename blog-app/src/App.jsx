@@ -58,7 +58,7 @@ function App() {
       setUsername('')
       setPassword('')
     } catch (error) {
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: 'Wrong username or password',
@@ -66,7 +66,7 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
@@ -95,7 +95,7 @@ function App() {
       })
       blogFormRef.current.toggleVisibility()
 
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: `a new blog ${blogObject.title} by ${blogObject.author} was added`,
@@ -103,13 +103,13 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: `The blog ${blogObject.title} by ${blogObject.author} was not added`,
@@ -117,7 +117,7 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
@@ -127,12 +127,12 @@ function App() {
   const likeBlog = async (blog) => {
     try {
       const updatedBlog = await blogService.update(blog)
-      const blogList = blogs.map((b) =>
-        b.id === updatedBlog.id ? updatedBlog : b,
-      )
-      blogsToShow(blogList)
+      dispatch({
+        type: 'VOTE_BLOG',
+        payload: updatedBlog
+      })
 
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: `You liked '${blog.title}' by ${blog.author}`,
@@ -140,13 +140,13 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
     } catch (error) {
       console.log(error)
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: `Like to the blog ${blog.title} is not registered`,
@@ -154,7 +154,7 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
@@ -167,10 +167,12 @@ function App() {
         throw new Error()
       } else {
         await blogService.remove(blog.id)
-        const blogList = blogs.filter((b) => b.id !== blog.id)
-        blogsToShow(blogList)
+        dispatch({
+          type: 'DELETE_BLOG',
+          payload: blog
+        })
 
-        store.dispatch({
+        dispatch({
           type: 'SET_MESSAGE',
           payload: {
             message: 'The deletion was completed successfully',
@@ -178,14 +180,14 @@ function App() {
           },
         })
         setTimeout(() => {
-          store.dispatch({
+          dispatch({
             type: 'REMOVE_MESSAGE',
           })
         }, 5000)
       }
     } catch (error) {
       console.log(error)
-      store.dispatch({
+      dispatch({
         type: 'SET_MESSAGE',
         payload: {
           message: 'The blog delete process is not completed',
@@ -193,7 +195,7 @@ function App() {
         },
       })
       setTimeout(() => {
-        store.dispatch({
+        dispatch({
           type: 'REMOVE_MESSAGE',
         })
       }, 5000)
