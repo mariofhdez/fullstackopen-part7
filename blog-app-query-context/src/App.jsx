@@ -17,8 +17,23 @@ function App() {
   const queryClient = useQueryClient()
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs']})
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(newBlog))
+    }
+  })
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.map(b => b.id !== updatedBlog.id ? b : updatedBlog))
+    }
+  })
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: (_, id) => {
+      // const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], (old =[]) => old.filter(b => b.id !== id))
     }
   })
   const blogFormRef = useRef()
@@ -32,7 +47,6 @@ function App() {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      console.log(user)
       blogService.setToken(user.token)
       userDispatch({ type: 'SET_USER', payload: user })
     }
@@ -133,11 +147,7 @@ function App() {
 
   const likeBlog = async (blog) => {
     try {
-      const updatedBlog = await blogService.update(blog)
-      const blogList = blogs.map((b) =>
-        b.id === updatedBlog.id ? updatedBlog : b,
-      )
-      blogsToShow(blogList)
+      updateBlogMutation.mutate(blog)
 
       messageDispatch({
         type: 'SET_MESSAGE',
@@ -173,9 +183,7 @@ function App() {
       if (!confirm(`Remove blog '${blog.title}' by ${blog.author}?`)) {
         throw new Error()
       } else {
-        await blogService.remove(blog.id)
-        const blogList = blogs.filter((b) => b.id !== blog.id)
-        blogsToShow(blogList)
+        deleteBlogMutation.mutate(blog.id)
 
         messageDispatch({
           type: 'SET_MESSAGE',
