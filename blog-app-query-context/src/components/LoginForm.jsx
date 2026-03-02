@@ -1,15 +1,43 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import loginService from '../services/login'
+import blogService from '../services/blog'
+import LoggedUserContext from "../LoggedUserContext"
 
-  const LoginForm = ({login}) => {
+  const LoginForm = ({messageDispatch}) => {
+    const { userDispatch } = useContext(LoggedUserContext)
       const [username, setUsername] = useState('')
       const [password, setPassword] = useState('')
 
-      const handleLogin = (e) => {
+      const handleLogin = async(e) => {
         e.preventDefault()
-        login(username, password)
-        setUsername('')
-        setPassword('')
-      }
+
+
+    try {
+      const user = await loginService.login({ username, password })
+
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      console.log(user)
+      setUsername('')
+      setPassword('')
+      userDispatch({ type: 'SET_USER', payload: user })
+    } catch (error) {
+      console.log(error)
+      messageDispatch({
+        type: 'SET_MESSAGE',
+        payload: {
+          message: error.response.data.error,
+          type: 'error',
+        },
+      })
+      setTimeout(() => {
+        messageDispatch({
+          type: 'REMOVE_MESSAGE',
+        })
+      }, 5000)
+    }
+  }
+      
     return (
     <>
       <h2>Login</h2>

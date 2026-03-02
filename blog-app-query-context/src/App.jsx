@@ -7,11 +7,11 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blog'
-import loginService from './services/login'
 
 import notificationReducer from './reducers/notificationReducer'
 import LoginForm from './components/LoginForm'
 import userReducer from './reducers/userReducer'
+import LoggedUserContext from './LoggedUserContext'
 
 function App() {
   const queryClient = useQueryClient()
@@ -32,7 +32,6 @@ function App() {
   const deleteBlogMutation = useMutation({
     mutationFn: blogService.remove,
     onSuccess: (_, id) => {
-      // const blogs = queryClient.getQueryData(['blogs'])
       queryClient.setQueryData(['blogs'], (old =[]) => old.filter(b => b.id !== id))
     }
   })
@@ -74,31 +73,6 @@ function App() {
   }
 
   const blogs = blogsToShow(blogsQuery.data)
-
-  const handleLogin = async (username, password) => {
-    try {
-      const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      console.log(user)
-      userDispatch({ type: 'SET_USER', payload: user })
-    } catch (error) {
-      console.log(error)
-      messageDispatch({
-        type: 'SET_MESSAGE',
-        payload: {
-          message: error.response.data.error,
-          type: 'error',
-        },
-      })
-      setTimeout(() => {
-        messageDispatch({
-          type: 'REMOVE_MESSAGE',
-        })
-      }, 5000)
-    }
-  }
 
   const handleLogout = async (e) => {
     e.preventDefault()
@@ -216,11 +190,11 @@ function App() {
   }
 
   return (
-    <>
+    <LoggedUserContext.Provider value={{user, userDispatch}}>
       <h1>Blog App</h1>
       <Notification message={message.message} type={message.type} />
       {(user === null || user === 'undefined') ? (
-        <LoginForm login={handleLogin} />
+        <LoginForm messageDispatch={messageDispatch} />
       ) : (
         <div>
           <div>
@@ -242,7 +216,7 @@ function App() {
           ))}
         </div>
       )}
-    </>
+    </LoggedUserContext.Provider>
   )
 }
 
