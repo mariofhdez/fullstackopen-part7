@@ -10,11 +10,12 @@ import UserList from './components/UserList'
 import Home from './components/Home'
 import Notification from './components/Notification'
 import User from './components/User'
+import BlogDetails from './components/BlogDetails'
 
 function App() {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
-  // const users = useSelector((state) => state.users)
+  const blogs = useSelector((state) => state.blogs)
 
   useEffect(() => {
     blogService.getAll().then((res) => {
@@ -59,8 +60,8 @@ function App() {
     }
   }
 
-  // const match = useMatch('/users/:id')
-  // const userDetail = match ? users.find((u) => u.id === match.params.id) : null
+  const blogMatch = useMatch('/blogs/:id')
+  const blog = blogMatch ? blogs.find(b => b.id === blogMatch.params.id): null
 
   return (
     <div className='container'>
@@ -80,6 +81,7 @@ function App() {
       <Routes>
         <Route path='/users/:id' element={<User />} />
         <Route path='/users' element={<UserList />} />
+        <Route path='/blogs/:id/' element={<BlogDetails blog={blog} />} />
         <Route
           path='/'
           element={

@@ -1,11 +1,9 @@
-import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import blogService from '../services/blog'
 
-const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false)
-
+const BlogDetails = ({ blog }) => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
 
@@ -19,10 +17,6 @@ const Blog = ({ blog }) => {
     } else {
       return { display: 'none' }
     }
-  }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-  const toggleVisibility = () => {
-    setVisible(!visible)
   }
 
   const likeBlog = async (blog) => {
@@ -103,39 +97,27 @@ const Blog = ({ blog }) => {
     }
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
+  if (!blog) return null
 
   return (
-    <div style={blogStyle} className='blog'>
-      <div className='blogHeader'>
-        <p>
-          <span>{blog.title}</span> - {blog.author}{' '}
-          <button onClick={toggleVisibility}>
-            {visible ? 'hide' : 'view'}
-          </button>
-        </p>
-      </div>
-      <div style={showWhenVisible} className='blogDetails'>
-        <p>{blog.url}</p>
-        <p>
-          Likes: {blog.likes}{' '}
-          <button onClick={() => likeBlog({ ...blog, likes: blog.likes + 1 })}>
-            like
-          </button>
-        </p>
-        <p>{blog.user ? blog.user.name : ''}</p>
-        <button style={showWhenIsSameUser()} onClick={() => deleteBlog(blog)}>
-          Remove
+    <div className='blog'>
+      <h3>
+        {blog.title} - <em>{blog.author}</em>
+      </h3>
+
+      <Link>{blog.url}</Link>
+      <p>
+        {blog.likes} likes{' '}
+        <button onClick={() => likeBlog({ ...blog, likes: blog.likes + 1 })}>
+          like
         </button>
-      </div>
+      </p>
+      <p>{blog.user ? `added by ${blog.user.name}` : ''}</p>
+      <button style={showWhenIsSameUser()} onClick={() => deleteBlog(blog)}>
+        Remove
+      </button>
     </div>
   )
 }
 
-export default Blog
+export default BlogDetails
