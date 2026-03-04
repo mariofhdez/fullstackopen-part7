@@ -1,24 +1,32 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 import blogService from './services/blog'
+import userService from './services/user'
 
-import Notification from './components/Notification'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
-import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
+import UserList from './components/UserList'
+import Home from './components/Home'
+import Notification from './components/Notification'
 
 function App() {
   const dispatch = useDispatch()
-  const user = useSelector(state => state.user)
-
-  const blogFormRef = useRef()
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     blogService.getAll().then((res) => {
       dispatch({
         type: 'SET_BLOGS',
+        payload: res,
+      })
+    })
+  }, [dispatch])
+
+  useEffect(() => {
+    userService.getAll().then((res) => {
+      dispatch({
+        type: 'GET_USERS',
         payload: res,
       })
     })
@@ -49,32 +57,34 @@ function App() {
     }
   }
 
-  const blogForm = () => {
-    return (
-      <Togglable buttonLabel='Create new note' ref={blogFormRef}>
-        <BlogForm ref={blogFormRef} />
-      </Togglable>
-    )
-  }
-
   return (
-    <>
+    <Router>
       <h1>Blog App</h1>
       <Notification />
-      {user.username === null ? (
-        <LoginForm />
-      ) : (
-        <div>
-          <div>
-            <p>{user.name}</p>
-            <button onClick={handleLogout}>Log out</button>
-          </div>
-          {blogForm()}
-          <h2>Blog list</h2>
-          <BlogList />
-        </div>
-      )}
-    </>
+      <div>
+        <Link style={{padding: 5}} to='/'>home</Link>
+        <Link style={{padding: 5}} to='/users'>users</Link>
+        <p>{user.name} logged in</p>
+        <button
+          onClick={handleLogout}>
+          Log out
+        </button>
+      </div>
+
+      <Routes>
+        <Route path='/users' element={<UserList />} />
+        <Route
+          path='/'
+          element={
+            user.username === null ? (
+              <LoginForm />
+            ) : (
+              <Home logout={handleLogout} />
+            )
+          }
+        />
+      </Routes>
+    </Router>
   )
 }
 
