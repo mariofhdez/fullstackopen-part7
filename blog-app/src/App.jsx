@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Link, Route, Routes, useMatch } from 'react-router-dom'
 
 import blogService from './services/blog'
 import userService from './services/user'
@@ -9,10 +9,12 @@ import LoginForm from './components/LoginForm'
 import UserList from './components/UserList'
 import Home from './components/Home'
 import Notification from './components/Notification'
+import User from './components/User'
 
 function App() {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
+  // const users = useSelector((state) => state.users)
 
   useEffect(() => {
     blogService.getAll().then((res) => {
@@ -57,21 +59,26 @@ function App() {
     }
   }
 
+  // const match = useMatch('/users/:id')
+  // const userDetail = match ? users.find((u) => u.id === match.params.id) : null
+
   return (
-    <Router>
+    <div className='container'>
       <h1>Blog App</h1>
       <Notification />
       <div>
-        <Link style={{padding: 5}} to='/'>home</Link>
-        <Link style={{padding: 5}} to='/users'>users</Link>
-        <p>{user.name} logged in</p>
-        <button
-          onClick={handleLogout}>
-          Log out
-        </button>
+        <Link style={{ padding: 5 }} to='/'>
+          home
+        </Link>
+        <Link style={{ padding: 5 }} to='/users'>
+          users
+        </Link>
+        <p>{user.name ? `${user.name} logged in`: ''}</p>
+        <button onClick={handleLogout}>Log out</button>
       </div>
 
       <Routes>
+        <Route path='/users/:id' element={<User />} />
         <Route path='/users' element={<UserList />} />
         <Route
           path='/'
@@ -84,7 +91,7 @@ function App() {
           }
         />
       </Routes>
-    </Router>
+    </div>
   )
 }
 
