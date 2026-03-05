@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, Route, Routes, useMatch } from 'react-router-dom'
+import { Route, Routes, useMatch } from 'react-router-dom'
 
 import blogService from './services/blog'
 import userService from './services/user'
@@ -11,6 +11,7 @@ import Home from './components/Home'
 import Notification from './components/Notification'
 import User from './components/User'
 import BlogDetails from './components/BlogDetails'
+import Navigation from './components/Navigation'
 
 function App() {
   const dispatch = useDispatch()
@@ -47,36 +48,14 @@ function App() {
     }
   }, [])
 
-  const handleLogout = async (e) => {
-    e.preventDefault()
-    try {
-      window.localStorage.clear()
-
-      dispatch({
-        type: 'REMOVE_USER',
-      })
-    } catch (error) {
-      console.error('Error', error.message)
-    }
-  }
-
   const blogMatch = useMatch('/blogs/:id')
   const blog = blogMatch ? blogs.find(b => b.id === blogMatch.params.id): null
 
   return (
     <div className='container'>
+      <Navigation />
       <h1>Blog App</h1>
       <Notification />
-      <div>
-        <Link style={{ padding: 5 }} to='/'>
-          home
-        </Link>
-        <Link style={{ padding: 5 }} to='/users'>
-          users
-        </Link>
-        <p>{user.name ? `${user.name} logged in`: ''}</p>
-        <button onClick={handleLogout}>Log out</button>
-      </div>
 
       <Routes>
         <Route path='/users/:id' element={<User />} />
@@ -88,7 +67,7 @@ function App() {
             user.username === null ? (
               <LoginForm />
             ) : (
-              <Home logout={handleLogout} />
+              <Home />
             )
           }
         />

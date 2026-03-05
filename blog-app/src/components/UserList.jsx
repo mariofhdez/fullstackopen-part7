@@ -10,8 +10,8 @@ const UserList = () => {
       <Table striped>
         <thead>
           <tr>
-            <td>username</td>
-            <td>blogs created</td>
+            <th>username</th>
+            <th>blogs created</th>
           </tr>
         </thead>
         <tbody>

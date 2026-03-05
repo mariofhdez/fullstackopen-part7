@@ -44,3 +44,18 @@ input {
   padding: 10px;
   margin-bottom: 10px;
 }
+
+span {
+  
+}
+
+span > a, em {
+  color: aliceblue;
+  font-weight: 600;
+  align-items: center;
+  display: flex;
+}
+
+a{
+  text-decoration: none;
+}
