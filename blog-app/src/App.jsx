@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useMatch } from 'react-router-dom'
 
 import blogService from './services/blog'
 import userService from './services/user'
@@ -49,26 +49,32 @@ function App() {
   }, [])
 
   const blogMatch = useMatch('/blogs/:id')
-  const blog = blogMatch ? blogs.find(b => b.id === blogMatch.params.id): null
+  const blog = blogMatch
+    ? blogs.find((b) => b.id === blogMatch.params.id)
+    : null
 
   return (
     <div className='container'>
       <Navigation />
-      <h1>Blog App</h1>
       <Notification />
 
       <Routes>
         <Route path='/users/:id' element={<User />} />
         <Route path='/users' element={<UserList />} />
-        <Route path='/blogs/:id/' element={<BlogDetails id={blog? blog.id:null} />} />
+        <Route
+          path='/blogs/:id/'
+          element={<BlogDetails id={blog ? blog.id : null} />}
+        />
         <Route
           path='/'
           element={
-            user.username === null ? (
-              <LoginForm />
-            ) : (
-              <Home />
-            )
+            user.username === null ? <Navigate replace to='/login' /> : <Home />
+          }
+        />
+        <Route
+          path='/login'
+          element={
+            user.username !== null ? <Navigate replace to='/' /> : <LoginForm />
           }
         />
       </Routes>

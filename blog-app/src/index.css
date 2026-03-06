@@ -1,6 +1,8 @@
-* {
-  margin-top: 5px;
-  margin-bottom: 5px;
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 p {
@@ -8,22 +10,13 @@ p {
   font-style: italic;
 }
 
-span {
-  font-weight: 700;
-  font-style: normal;
-}
-
-.textField {
+/* .textField {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-bottom: 5px;
   height: 30px;
-}
-
-input {
-  height: 20px;
-}
+} */
 
 .success {
   color: green;
@@ -45,15 +38,16 @@ input {
   margin-bottom: 10px;
 }
 
-span {
-  
-}
-
-span > a, em {
+span > a, span > em, .brand {
   color: aliceblue;
   font-weight: 600;
   align-items: center;
   display: flex;
+}
+
+em {
+  font-weight: 400;
+
 }
 
 a{

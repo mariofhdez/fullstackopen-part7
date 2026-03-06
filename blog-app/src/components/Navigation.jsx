@@ -1,14 +1,16 @@
 import { Nav, Navbar } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Navigation = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
+  const navigate = useNavigate()
   const handleLogout = async (e) => {
     e.preventDefault()
     try {
       window.localStorage.clear()
+      navigate('/login')
 
       dispatch({
         type: 'REMOVE_USER',
@@ -22,9 +24,10 @@ const Navigation = () => {
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='me-auto'>
+          <span className='navbar-brand mb-0 px-4 h1 brand'>Blog-App</span>
           <Nav.Link as='span'>
             <Link style={{ padding: 5 }} to='/'>
-              home
+              blogs
             </Link>
           </Nav.Link>
           <Nav.Link as='span'>

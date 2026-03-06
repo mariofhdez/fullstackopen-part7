@@ -58,37 +58,41 @@ const BlogForm = ({ref}) => {
   }
 
   return (
-    <div>
+    <div className='container'>
       <h2>Create a new blog</h2>
       <form onSubmit={addBlog}>
-        <div className='textField'>
-          <p>Title:</p>
+        <div className='input-group mb-3'>
+          <label className='input-group-text' for='title'>Title:</label>
           <input
+            className='form-control'
+            id='title'
             type='text'
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder='Title'
           />
         </div>
-        <div className='textField'>
-          <p>Author:</p>
+        <div className='input-group mb-3'>
+          <span className='input-group-text'>Author:</span>
           <input
+            className='form-control'
             type='text'
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
             placeholder='Author'
           />
         </div>
-        <div className='textField'>
-          <p>URL:</p>
+        <div className='input-group mb-3'>
+          <span className='input-group-text'>URL:</span>
           <input
+            className='form-control'
             type='text'
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder='Url'
           />
         </div>
-        <button type='submit'>Save</button>
+        <button className='btn btn-success' type='submit'>Save</button>
       </form>
     </div>
   )

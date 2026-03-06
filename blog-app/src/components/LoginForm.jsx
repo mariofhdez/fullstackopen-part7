@@ -3,12 +3,15 @@ import { useState } from "react"
 import loginService from '../services/login'
 import blogService from '../services/blog'
 import { useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const dispatch = useDispatch()
+
+  const navigate = useNavigate()
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -18,6 +21,8 @@ const LoginForm = () => {
       if (user) {
         window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
         blogService.setToken(user.token)
+        navigate('/')
+
         dispatch({
           type: 'SET_USER',
           payload: user,

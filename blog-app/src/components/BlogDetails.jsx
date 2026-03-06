@@ -3,11 +3,11 @@ import { Link, useMatch } from 'react-router-dom'
 
 import blogService from '../services/blog'
 import { useEffect, useState } from 'react'
+import CommentList from './CommentList'
 
 const BlogDetails = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
-  const [comment, setComment] = useState('')
   const [blog, setBlog] = useState(null)
 
   const blogMatch = useMatch('/blogs/:id')
@@ -110,15 +110,13 @@ const BlogDetails = () => {
     }
   }
 
-  const handleComment = async (e) => {
-    e.preventDefault()
+  const handleComment = async (comment) => {
     try {
       const savedComment = await blogService.addComment(id, {
         content: comment
       })
       console.log(savedComment);
       setBlog(savedComment)
-      setComment('')
 
       dispatch({
         type: 'SET_MESSAGE',
@@ -168,17 +166,7 @@ const BlogDetails = () => {
       <button style={showWhenIsSameUser()} onClick={() => deleteBlog(blog)}>
         Remove
       </button>
-      <div>
-        <h4>comments</h4>
-        <form onSubmit={handleComment}>
-          <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} />
-          <button type="submit">add comment</button>
-        </form>
-        {blog.comments.length === 0 ? 'no comments yet':
-        blog.comments.map(c => (
-          <li key={c.id}>{c.content}</li>
-        ))}
-      </div>
+      <CommentList comments={blog.comments} onComment={handleComment} />
     </div>
   )
 }
