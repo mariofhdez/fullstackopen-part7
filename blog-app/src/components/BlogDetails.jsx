@@ -1,11 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useMatch } from 'react-router-dom'
 
 import blogService from '../services/blog'
+import { useEffect, useState } from 'react'
 
-const BlogDetails = ({ blog }) => {
+const BlogDetails = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
+  const [blog, setBlog] = useState(null)
+
+  const blogMatch = useMatch('/blogs/:id')
+  const id = blogMatch.params.id
+
+  useEffect(()=> {
+    blogService.getById(id).then((res) => {
+      setBlog(res)
+    })
+  },[dispatch])
 
   const showWhenIsSameUser = () => {
     if (user !== undefined && blog.user) {
@@ -22,6 +33,7 @@ const BlogDetails = ({ blog }) => {
   const likeBlog = async (blog) => {
     try {
       const updatedBlog = await blogService.update(blog)
+      setBlog(updatedBlog)
       dispatch({
         type: 'VOTE_BLOG',
         payload: updatedBlog,
@@ -116,6 +128,13 @@ const BlogDetails = ({ blog }) => {
       <button style={showWhenIsSameUser()} onClick={() => deleteBlog(blog)}>
         Remove
       </button>
+      <div>
+        <h4>comments</h4>
+        {blog.comments.length === 0 ? 'no comments yet':
+        blog.comments.map(c => (
+          <li key={c.id}>{c.content}</li>
+        ))}
+      </div>
     </div>
   )
 }

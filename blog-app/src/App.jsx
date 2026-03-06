@@ -60,7 +60,7 @@ function App() {
       <Routes>
         <Route path='/users/:id' element={<User />} />
         <Route path='/users' element={<UserList />} />
-        <Route path='/blogs/:id/' element={<BlogDetails blog={blog} />} />
+        <Route path='/blogs/:id/' element={<BlogDetails id={blog? blog.id:null} />} />
         <Route
           path='/'
           element={
