@@ -52,6 +52,20 @@ const update = async (blog) => {
   }
 }
 
+const addComment = async (idBlog, comment) => {
+  const config = {
+    headers: { Authorization: token }
+  }
+
+  const response = await axios.post(`${baseUrl}/${idBlog}/comments`, comment, config)
+  if (response.status === 201) {
+    return response.data
+  } else {
+    console.log(response.data)
+    return null
+  }
+}
+
 export default {
   getAll,
   getById,
@@ -59,4 +73,5 @@ export default {
   remove,
   update,
   setToken,
+  addComment,
 }
